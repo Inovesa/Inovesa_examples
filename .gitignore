@@ -1,5 +1,6 @@
 
 #Ignore simulation results
-KARA/f05135/v*
-KARA/f05135/plots
+**/v*
+**/plots
+
 
