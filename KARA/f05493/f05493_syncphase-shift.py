@@ -121,7 +121,7 @@ for current,csrloss,bunchposition,syncphases in dataset:
     
     syncphase_mean.append(np.mean(syncphases))
     syncphase_sdev.append(np.std(syncphases))
-    mask = syncphase < syncphase_mean[-1]
+    mask = syncphases < syncphase_mean[-1]
     syncphase_sdev_upper.append(np.ma.masked_where(mask, syncphases).std())
     syncphase_sdev_lower.append(np.ma.masked_where(~mask, syncphases).std())
     syncphase_min.append(np.min(syncphases))
@@ -161,10 +161,9 @@ plt.gca().yaxis.label.set_color('blue')
 plt.gca().tick_params(axis='y', colors='blue')
 
 #plt.fill_between(currents,syncphase_min,syncphase_max,color="#FFDDDD",label="",hatch='/')
-plt.fill_between(currents,syncphase_mean-syncphase_sdev_lower,syncphase_mean+syncphase_sdev_lower, color="#AAAAFF",label="",hatch='//')
+plt.fill_between(currents,syncphase_mean-syncphase_sdev_lower,syncphase_mean+syncphase_sdev_upper, color="#AAAAFF")
 handle0, = plt.plot(currents,syncphase_mean,"b-",label=r"$\phi(\Delta E = 0)$")
 
-plt.xlim(0.001,1)
 plt.xscale("log")
 plt.ylim(-2,3)
 plt.yticks(np.arange(0, 4, step=1))
@@ -183,9 +182,9 @@ plt.gca().tick_params(axis='y', colors='red')
 
 #plt.fill_between(currents,bunchposition_min,bunchposition_max,facecolor="none",edgecolor="#DDDDFF",label="",hatch='\\')
 plt.fill_between(currents,bunchposition_mean-bunchposition_sdev_lower,bunchposition_mean+bunchposition_sdev_lower,facecolor="r",label="",alpha=0.5, linewidth=0.0)
-#plt.fill_between(currents,bunchposition_mean-bunchposition_sdev_lower,bunchposition_mean+bunchposition_sdev_lower,facecolor="none",edgecolor="#AAAAFF",label="",hatch='\\\\', linewidth=0.0)
 handle1, = plt.plot(currents,bunchposition_mean,"r--",label=r"$\langle \phi \rangle$")
 
+plt.xlim(0.001,1)
 plt.ylim(0,1)
 plt.yticks(np.arange(0, 1, step=0.2))
 plt.grid()

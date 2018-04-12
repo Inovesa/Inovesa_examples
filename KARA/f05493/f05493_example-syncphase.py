@@ -40,16 +40,15 @@ plt.plot(axis_z,deltaE,"b")
 plt.plot([syncphase,syncphase],[-30,30],"b--")
 
 plt.ylabel("Energy gain (keV)")
-plt.ylim(-30,30)
-plt.yticks(np.arange(-30, 40, step=10))
+plt.ylim(-27.5,27.5)
+plt.yticks(np.arange(-20, 30, step=10))
 
 plt.gca().spines['right'].set_color('red')
 plt.gca().spines['left'].set_color('blue')
 plt.gca().yaxis.label.set_color('blue')
 plt.gca().tick_params(axis='y', colors='blue')
 
-
-plt.xlim(-8,8)
+plt.grid()
 
 plt.twinx()
 
@@ -63,11 +62,11 @@ plt.gca().spines['left'].set_color('blue')
 plt.gca().yaxis.label.set_color('red')
 plt.gca().tick_params(axis='y', colors='red')
 
-plt.ylim(0,15)
-plt.xticks(np.arange(-6, 8, step=3))
-plt.yticks(np.arange(0, 16, step=3))
+plt.yticks(np.arange(0, 14, step=3))
+plt.ylim(0,14)
 
-plt.grid()
+plt.xticks(np.arange(-6, 8, step=3))
+plt.xlim(-8,8)
 
 plt.savefig("plots/f05493_example-syncphase.eps")
 plt.savefig("plots/f05493_example-syncphase.pdf")
