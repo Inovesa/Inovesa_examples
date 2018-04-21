@@ -11,7 +11,7 @@ echo "Using Inovesa $inoversion"
 
 inoversion=${inoversion/ /_}
 dir="./${inoversion}"
-mkdir -p $dir
+mkdir -p ${dir}
 
 # configuration to use
 cfg="./f06112.cfg"
@@ -42,6 +42,10 @@ for curri in $currents; do
   # Save current for next loop iteration.
   lasti=$curri
 done
+
+mkdir -p ./plots
+
+./f06112_syncphase-shift.py ${dir}
 
 exit
 
