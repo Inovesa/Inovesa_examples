@@ -43,5 +43,7 @@ for curri in $currents; do
   lasti=$curri
 done
 
+./f05493_example-syncphase.py ${dir}/0050_a.h5
+
 exit
 

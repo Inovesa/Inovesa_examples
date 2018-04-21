@@ -13,6 +13,8 @@ import sys
 import scipy.signal
 from scipy.optimize import curve_fit
 from scipy.interpolate import interp1d
+import io
+import unicodecsv
 
 def minor_format(x, i=None):
     return x
@@ -26,8 +28,28 @@ def fwhm(data):
         fwhm[i] = above
     return fwhm
 
-fnames = []
+meas_file = "f06112_meas.csv"
 
+
+timestamp = []
+meas_current34 = []
+meas_current35 = []
+with io.open(meas_file, encoding='utf8') as f:
+	reader = unicodecsv.reader(f,delimiter=',')
+	for entry in reader:
+		if entry[0][0] != 'U':
+			timestamp.append(int(entry[1]))
+			meas_current34.append(float(entry[5]))
+			meas_current35.append(float(entry[6]))
+		
+plt.plot(timestamp,meas_current34)
+plt.plot(timestamp,meas_current35)
+
+plt.show()
+
+exit()
+
+fnames = []
 ending = "_a.h5"
 for fname in os.listdir(sys.argv[1]):
   if len(fname) == len("1234_a.h5") and fname[-len(ending):] == ending:
