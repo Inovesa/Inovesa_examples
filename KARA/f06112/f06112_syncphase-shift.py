@@ -16,39 +16,6 @@ from scipy.interpolate import interp1d
 import io
 import unicodecsv
 
-def minor_format(x, i=None):
-    return x
-
-def fwhm(data):
-    fwhm = np.zeros(np.shape(data)[0])
-    for i,profile in enumerate(data):
-        maxval = max(profile)
-        maxpos = np.where(profile==maxval)[0]
-        above = np.size((np.where(profile>maxval/2)))
-        fwhm[i] = above
-    return fwhm
-
-meas_file = "f06112_meas.csv"
-
-
-timestamp = []
-meas_current34 = []
-meas_current35 = []
-with io.open(meas_file, encoding='utf8') as f:
-	reader = unicodecsv.reader(f,delimiter=',')
-	for entry in reader:
-		if entry[0][0] != 'U':
-			timestamp.append(int(entry[1]))
-			meas_current34.append(float(entry[5]))
-			meas_current35.append(float(entry[6]))
-		
-plt.plot(timestamp,meas_current34)
-plt.plot(timestamp,meas_current35)
-
-plt.show()
-
-exit()
-
 fnames = []
 ending = "_a.h5"
 for fname in os.listdir(sys.argv[1]):
@@ -216,4 +183,75 @@ plt.grid()
 plt.savefig("plots/f06112_syncphase-shift.eps")
 plt.savefig("plots/f06112_syncphase-shift.pdf")
 plt.savefig("plots/f06112_syncphase-shift.png")
+
+plt.close()
+
+meas_file = "f06112_meas.csv"
+
+timestamp = []
+meas_current34 = []
+meas_current35 = []
+with io.open(meas_file, encoding='utf8') as f:
+	reader = unicodecsv.reader(f,delimiter=',')
+	for entry in reader:
+		if entry[0][0] != 'U':
+			timestamp.append(int(entry[1]))
+			meas_current34.append(float(entry[5]))
+			meas_current35.append(float(entry[6]))
+
+timestamp = np.array(timestamp)
+
+I1 = interp1d(timestamp, meas_current34)
+I2 = interp1d(timestamp, meas_current35)
+phi = interp1d(currents, bunchposition_mean)
+
+plt.figure(figsize=(3.5,2),tight_layout=True)
+
+plt.xlabel("Time (h)")
+plt.ylabel(r"$I$ (mA)")
+plt.gca().spines['right'].set_color('red')
+plt.gca().spines['left'].set_color('blue')
+plt.gca().yaxis.label.set_color('blue')
+plt.gca().tick_params(axis='y', colors='blue')
+
+plt.plot(timestamp/3600.0,I1(timestamp), "b-", label="$I_1$")
+plt.plot(timestamp/3600.0,I2(timestamp), "b--", label="$I_2$")
+
+plt.twinx()
+
+plt.xlabel("Time (h)")
+plt.ylabel(r"$\langle \phi \rangle$ (ps)")
+plt.gca().spines['right'].set_color('red')
+plt.gca().spines['left'].set_color('blue')
+plt.gca().yaxis.label.set_color('red')
+plt.gca().tick_params(axis='y', colors='red')
+plt.yticks(np.arange(0, 0.4, step=0.1))
+
+plt.plot(timestamp/3600.0,phi(I1(timestamp)),"r-",label=r"$\langle\phi\rangle_1$")
+plt.plot(timestamp/3600.0,phi(I2(timestamp)),"r--",label=r"$\langle\phi\rangle_2$")
+plt.plot(timestamp/3600.0,phi(I2(timestamp))-phi(I1(timestamp)),"r:",label=r"$\Delta\langle\phi\rangle$")
+
+plt.savefig("plots/f06112_syncphase-compare.eps")
+plt.savefig("plots/f06112_syncphase-compare.pdf")
+plt.savefig("plots/f06112_syncphase-compare.png")
+
+plt.close()
+
+plt.figure(figsize=(3.5,2),tight_layout=True)
+
+plt.plot(I2(timestamp)-I1(timestamp),phi(I2(timestamp))-phi(I1(timestamp)),"k-")
+
+plt.xlabel("Bunch Current Difference (mA)")
+plt.ylabel(r"$\Delta \langle \phi \rangle$ (ps)")
+
+plt.savefig("plots/f06112_delta-syncphase.eps")
+plt.savefig("plots/f06112_delta-syncphase.pdf")
+plt.savefig("plots/f06112_delta-syncphase.png")
+
+plt.show()
+
+
+
+exit()
+
 
