@@ -16,6 +16,37 @@ from scipy.interpolate import interp1d
 import io
 import unicodecsv
 
+meas_file = "f06112_meas.csv"
+
+timestamp = []
+meas_current34 = []
+meas_current35 = []
+meas_timing34 = []
+meas_timing35 = []
+acc_timing34 = []
+acc_timing35 = []
+
+with io.open(meas_file, encoding='utf8') as f:
+	reader = unicodecsv.reader(f,delimiter=',')
+	for entry in reader:
+		if entry[0][0] != 'U':
+			timestamp.append(int(entry[1]))
+			meas_current34.append(float(entry[5]))
+			meas_current35.append(float(entry[6]))
+			meas_timing34.append(float(entry[7]))
+			acc_timing34.append(float(entry[8]))
+			meas_timing35.append(float(entry[9]))
+			acc_timing35.append(float(entry[10]))
+
+
+timestamp = np.array(timestamp)
+meas_timing34 = np.array(meas_timing34)
+meas_timing35 = np.array(meas_timing35)
+acc_timing34 = np.array(acc_timing34)
+acc_timing35 = np.array(acc_timing35)
+delta_errorbar = np.sqrt(acc_timing34*acc_timing34+acc_timing35*acc_timing35)
+
+
 fnames = []
 ending = "_a.h5"
 for fname in os.listdir(sys.argv[1]):
@@ -139,6 +170,29 @@ syncphase_sdev = np.array(syncphase_sdev)
 #font = {'size' : 19 }
 #matplotlib.rc('font', **font)
 
+plt.figure(figsize=(3.5,2),tight_layout=True)
+
+plt.xlabel("Bunch Current (mA)")
+plt.ylabel(r"$\langle \phi \rangle$ (ps)")
+
+#plt.fill_between(currents,bunchposition_min,bunchposition_max,facecolor="none",edgecolor="#DDDDFF",label="",hatch='\\')
+plt.fill_between(currents,bunchposition_mean-bunchposition_sdev_lower,bunchposition_mean+bunchposition_sdev_lower,facecolor="m",label="",alpha=0.5, linewidth=0.0)
+handle1, = plt.plot(currents,bunchposition_mean,"m-",label=r"$\langle \phi \rangle$")
+
+plt.xlim(0.001,1.5)
+plt.xscale("log")
+plt.yticks(np.arange(0, 0.6, step=0.1))
+plt.ylim(0,0.5)
+plt.grid()
+
+
+
+plt.savefig("plots/f06112_syncphase.eps")
+plt.savefig("plots/f06112_syncphase.pdf")
+plt.savefig("plots/f06112_syncphase.png")
+
+plt.close()
+
 
 plt.figure(figsize=(3.5,2),tight_layout=True)
 
@@ -186,55 +240,70 @@ plt.savefig("plots/f06112_syncphase-shift.png")
 
 plt.close()
 
-meas_file = "f06112_meas.csv"
 
-timestamp = []
-meas_current34 = []
-meas_current35 = []
-with io.open(meas_file, encoding='utf8') as f:
-	reader = unicodecsv.reader(f,delimiter=',')
-	for entry in reader:
-		if entry[0][0] != 'U':
-			timestamp.append(int(entry[1]))
-			meas_current34.append(float(entry[5]))
-			meas_current35.append(float(entry[6]))
-
-timestamp = np.array(timestamp)
 
 I1 = interp1d(timestamp, meas_current34)
 I2 = interp1d(timestamp, meas_current35)
 phi = interp1d(currents, bunchposition_mean)
 
-plt.figure(figsize=(3.5,2),tight_layout=True)
+plt.figure(figsize=(3.5,3),tight_layout=True)
 
-plt.xlabel("Time (h)")
-plt.ylabel(r"$I$ (mA)")
-plt.gca().spines['right'].set_color('red')
-plt.gca().spines['left'].set_color('blue')
-plt.gca().yaxis.label.set_color('blue')
-plt.gca().tick_params(axis='y', colors='blue')
+gs = matplotlib.gridspec.GridSpec(2, 1)
 
-plt.plot(timestamp/3600.0,I1(timestamp), "b-", label="$I_1$")
-plt.plot(timestamp/3600.0,I2(timestamp), "b--", label="$I_2$")
+ax1b = plt.subplot(gs[0])
+ax1a = ax1b.twinx()
+ax2 = plt.subplot(gs[1])
 
-plt.twinx()
+ax1a.set_ylabel(r"$I$ (mA)")
+ax1a.spines['right'].set_color('blue')
+ax1a.spines['left'].set_color('red')
+ax1a.yaxis.label.set_color('blue')
+ax1a.tick_params(axis='y', colors='blue')
 
-plt.xlabel("Time (h)")
-plt.ylabel(r"$\langle \phi \rangle$ (ps)")
-plt.gca().spines['right'].set_color('red')
-plt.gca().spines['left'].set_color('blue')
-plt.gca().yaxis.label.set_color('red')
-plt.gca().tick_params(axis='y', colors='red')
-plt.yticks(np.arange(0, 0.4, step=0.1))
+ax1a.plot(timestamp/3600.0,I1(timestamp), "b-", label="$I_1$")
+ax1a.plot(timestamp/3600.0,I2(timestamp), "b--", label="$I_2$")
 
-plt.plot(timestamp/3600.0,phi(I1(timestamp)),"r-",label=r"$\langle\phi\rangle_1$")
-plt.plot(timestamp/3600.0,phi(I2(timestamp)),"r--",label=r"$\langle\phi\rangle_2$")
-plt.plot(timestamp/3600.0,phi(I2(timestamp))-phi(I1(timestamp)),"r:",label=r"$\Delta\langle\phi\rangle$")
+ax1a.set_ylim(0,1.75)
 
-plt.savefig("plots/f06112_syncphase-compare.eps")
+
+
+ax1b.set_ylabel(r"$\langle \phi \rangle$ (ps)")
+ax1b.spines['right'].set_color('blue')
+ax1b.spines['left'].set_color('red')
+ax1b.yaxis.label.set_color('red')
+ax1b.tick_params(axis='y', colors='red')
+ax1b.set_yticks(np.arange(0, 0.4, step=0.1))
+
+plt.setp( ax1b.get_xticklabels(), visible=False)
+
+ax1b.plot(timestamp/3600.0,phi(I1(timestamp)),"r-",label=r"$\langle\phi\rangle_1$")
+ax1b.plot(timestamp/3600.0,phi(I2(timestamp)),"r--",label=r"$\langle\phi\rangle_2$")
+
+ax1b.set_xlim(0,8)
+ax1b.set_ylim(0,0.35)
+
+ax1a.set_yticks(np.arange(0, 2, step=0.5))
+ax1b.grid()
+
+meas_delta = meas_timing34-meas_timing35
+
+ax2.errorbar(timestamp/3600.0,meas_delta,yerr=delta_errorbar,fmt='.',color="#FFAAFF",label=r"$\Delta\langle\phi\rangle$",zorder=0)
+ax2.plot(timestamp/3600.0,meas_delta,'m.',label=r"$\Delta\langle\phi\rangle$",markersize=2,alpha=0.5,zorder=1)
+N = 50
+average_delta = np.convolve(meas_delta, np.ones((N,))/N, mode='valid')
+ax2.plot(timestamp[N/2-1:-N/2]/3600.0,average_delta,"m-",label=r"$\Delta\langle\phi\rangle$",zorder=2)
+ax2.plot(timestamp/3600.0,phi(I2(timestamp))-phi(I1(timestamp)),"r-",label=r"$\Delta\langle\phi\rangle$",zorder=3)
+
+ax2.set_xlim(0,8)
+ax2.set_yticks(np.arange(0, 4, step=1))
+ax2.set_ylim(-0.5,4)
+
+ax2.set_xlabel("Time (h)")
+ax2.set_ylabel(r"$\Delta\langle \phi \rangle$ (ps)")
+
+ax2.grid()
+
 plt.savefig("plots/f06112_syncphase-compare.pdf")
-plt.savefig("plots/f06112_syncphase-compare.png")
-
 plt.close()
 
 plt.figure(figsize=(3.5,2),tight_layout=True)
@@ -242,13 +311,11 @@ plt.figure(figsize=(3.5,2),tight_layout=True)
 plt.plot(I2(timestamp)-I1(timestamp),phi(I2(timestamp))-phi(I1(timestamp)),"k-")
 
 plt.xlabel("Bunch Current Difference (mA)")
-plt.ylabel(r"$\Delta \langle \phi \rangle$ (ps)")
+plt.ylabel(r"$\Delta\langle \phi \rangle$ (ps)")
 
 plt.savefig("plots/f06112_delta-syncphase.eps")
 plt.savefig("plots/f06112_delta-syncphase.pdf")
 plt.savefig("plots/f06112_delta-syncphase.png")
-
-plt.show()
 
 
 
