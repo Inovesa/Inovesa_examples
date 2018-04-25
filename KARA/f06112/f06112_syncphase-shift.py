@@ -6,6 +6,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 from matplotlib.ticker import LogLocator
+from matplotlib.ticker import FormatStrFormatter
 import numpy as np
 import os
 import h5py
@@ -49,7 +50,7 @@ delta_errorbar = np.sqrt(acc_timing34*acc_timing34+acc_timing35*acc_timing35)
 
 fnames = []
 ending = "_a.h5"
-for fname in os.listdir(sys.argv[1]):
+for fname in os.listdir("v1.0.0"):
   if len(fname) == len("1234_a.h5") and fname[-len(ending):] == ending:
     fnames.append("./v1.0.0/"+fname)
 
@@ -246,43 +247,42 @@ I1 = interp1d(timestamp, meas_current34)
 I2 = interp1d(timestamp, meas_current35)
 phi = interp1d(currents, bunchposition_mean)
 
-plt.figure(figsize=(3.5,3),tight_layout=True)
 
-gs = matplotlib.gridspec.GridSpec(2, 1)
 
-ax1b = plt.subplot(gs[0])
-ax1a = ax1b.twinx()
-ax2 = plt.subplot(gs[1])
+plt.figure(figsize=(3.5,5),tight_layout=True)
 
-ax1a.set_ylabel(r"$I$ (mA)")
-ax1a.spines['right'].set_color('blue')
-ax1a.spines['left'].set_color('red')
-ax1a.yaxis.label.set_color('blue')
-ax1a.tick_params(axis='y', colors='blue')
+gs = matplotlib.gridspec.GridSpec(10, 1)
+
+ax1a = plt.subplot(gs[:2])
+ax1b = plt.subplot(gs[2:5],sharex=ax1a)
+ax2 = plt.subplot(gs[5:],sharex=ax1a)
+
+ax1a.set_ylabel(r"$I_\mathrm{b}$ (mA)")
 
 ax1a.plot(timestamp/3600.0,I1(timestamp), "b-", label="$I_1$")
 ax1a.plot(timestamp/3600.0,I2(timestamp), "b--", label="$I_2$")
 
-ax1a.set_ylim(0,1.75)
 
+
+ax1a.set_yscale("log")
+ax1a.set_ylim(0.015,2)
+
+ax1a.yaxis.set_major_formatter(FormatStrFormatter('%.1f'))
+
+ax1a.grid()
 
 
 ax1b.set_ylabel(r"$\langle \phi \rangle$ (ps)")
-ax1b.spines['right'].set_color('blue')
-ax1b.spines['left'].set_color('red')
-ax1b.yaxis.label.set_color('red')
-ax1b.tick_params(axis='y', colors='red')
 ax1b.set_yticks(np.arange(0, 0.4, step=0.1))
 
+plt.setp( ax1a.get_xticklabels(), visible=False)
 plt.setp( ax1b.get_xticklabels(), visible=False)
 
 ax1b.plot(timestamp/3600.0,phi(I1(timestamp)),"r-",label=r"$\langle\phi\rangle_1$")
 ax1b.plot(timestamp/3600.0,phi(I2(timestamp)),"r--",label=r"$\langle\phi\rangle_2$")
 
-ax1b.set_xlim(0,8)
 ax1b.set_ylim(0,0.35)
 
-ax1a.set_yticks(np.arange(0, 2, step=0.5))
 ax1b.grid()
 
 meas_delta = meas_timing34-meas_timing35
@@ -295,8 +295,7 @@ ax2.plot(timestamp[N/2-1:-N/2]/3600.0,average_delta,"m-",label=r"$\Delta\langle\
 ax2.plot(timestamp/3600.0,phi(I2(timestamp))-phi(I1(timestamp)),"r-",label=r"$\Delta\langle\phi\rangle$",zorder=3)
 
 ax2.set_xlim(0,8)
-ax2.set_yticks(np.arange(0, 4, step=1))
-ax2.set_ylim(-0.5,4)
+ax2.set_ylim(-1.25,5.25)
 
 ax2.set_xlabel("Time (h)")
 ax2.set_ylabel(r"$\Delta\langle \phi \rangle$ (ps)")

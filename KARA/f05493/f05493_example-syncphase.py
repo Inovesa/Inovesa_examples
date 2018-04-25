@@ -48,7 +48,11 @@ plt.gca().spines['left'].set_color('blue')
 plt.gca().yaxis.label.set_color('blue')
 plt.gca().tick_params(axis='y', colors='blue')
 
+
 plt.grid()
+
+
+plt.xlabel("Longitudinal Position (ps)")
 
 plt.twinx()
 
