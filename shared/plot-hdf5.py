@@ -20,6 +20,7 @@ time = np.array([])
 bunchlength = np.array([])
 energyspread = np.array([])
 avgphase = np.array([])
+avgenergy = np.array([])
 csr_power = np.array([])
 csr_factor = 1e-6
 csr_label = r"CSR Intensity (arb. units)"
@@ -48,6 +49,10 @@ for fname in fnames:
             csr_factor = (hdf_f['/CSR/Intensity/data']).attrs['Watt']
         except:
             csr_label = r"CSR Intensity (arb. units)"
+    try:
+        avgenergy = np.append(avgenergy,hdf_f['/EnergyAverage/data'][...])
+    except:
+        avgenergy = np.append(0)
 
 plt.figure()
 ax1 = plt.subplot(111)
@@ -57,6 +62,8 @@ if ("sq" in quantities):
     ax1.plot(time,bunchlength,label=r"$\sigma_q$")
 if ("sp" in quantities):
     ax1.plot(time,energyspread,label=r"$\sigma_p$")
+if ("mp" in quantities):
+    ax1.plot(time,avgenergy,label=r"$\mu_p$")
 if ("mq" in quantities):
     ax1.plot(time,avgphase,label=r"$\mu_q$")
 
