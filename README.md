@@ -22,10 +22,10 @@ Some results are used on the poster of the poster shown at the IPAC'18 (WEPAL028
 ### f06112 (Phase Shift)
 Comparable to measurements of KARA operation shift *f06112*.
 Goal of the simulation is to determine the *synchronous phase shift* (here defined by the average phase) due to the CSR impedance.
-The results can be seen in the proceedings of IPAC'18  (paper WEPAL028).
+The results can be seen in [Proc. IPAC'18, paper WEPAL028](https://doi.org/10.18429/JACoW-IPAC2018-WEPAL028).
 
 
 ### f06214 (Noise, Passive Particle Tracking)
 Comparable to measurements of KARA operation shift *f06214*.
 This simulation serves as example for several new features of *Inovesa v1.1*.
-Explanation can be found in the proceedings of IPAC'18 (paper THPAK932).
+Explanation can be found in [J. Phys.: Conf. Ser. **1067** 062025](http://iopscience.iop.org/article/10.1088/1742-6596/1067/6/062025/meta#).
