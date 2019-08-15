@@ -14,7 +14,7 @@ dir="./${inoversion}"
 mkdir -p ${dir}
 
 # configuration to use
-cfg="./f06214.cfg"
+config="./f06214.cfg"
 
 ${binary} -I ${lasti}e-6 --config $config -T 1000 -o ${dir}/${lasti}_a1.h5
 for curri in {0350..0175..1}
