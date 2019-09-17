@@ -52,7 +52,7 @@ for fname in fnames:
     try:
         avgenergy = np.append(avgenergy,hdf_f['/EnergyAverage/data'][...])
     except:
-        avgenergy = np.append(0)
+        avgenergy = np.append(avgenergy,0)
 
 plt.figure()
 ax1 = plt.subplot(111)
