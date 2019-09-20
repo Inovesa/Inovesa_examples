@@ -7,13 +7,13 @@ else
   inovesa_bin=$1
 fi
 
-mkdir results
+mkdir -p results
 
-padding=0004
+padding=0002
 basename0="results/free-space-pad${padding}"
 ${inovesa_bin} -c wake-accuracy.cfg -o ${basename0}.png --padding ${padding}
 
-for padding in 0004 0016 0032 0064 0128 0256 0512 1024
+for padding in 0002 0004 0512 1024
 do
   basename="results/free-space-pad${padding}"
   ${inovesa_bin} -c wake-accuracy.cfg --padding ${padding} -o ${basename}.h5
