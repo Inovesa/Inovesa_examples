@@ -21,3 +21,5 @@ do
   ${inovesa_bin} -c wake-accuracy.cfg --padding ${padding} -o ${basename}_png.h5 -i ${basename0}.png
   ./plot_wake.py ${basename}_png.h5
 done
+
+./wake-accuracy.py
