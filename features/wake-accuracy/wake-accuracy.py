@@ -7,7 +7,7 @@ import h5py
 import sys
 
 basename = "results/free-space-pad"
-paddings = ["1024", "0512", "0004", "0002"]
+paddings = ["1024", "0512", "0256", "0002"]
 
 fig1 = plt.figure(figsize=(4, 3), dpi=80, tight_layout=True)
 ax1 = fig1.add_subplot(111)

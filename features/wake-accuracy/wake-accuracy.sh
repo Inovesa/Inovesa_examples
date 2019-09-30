@@ -13,7 +13,7 @@ padding=0002
 basename0="results/free-space-pad${padding}"
 ${inovesa_bin} -c wake-accuracy.cfg -o ${basename0}.png --padding ${padding}
 
-for padding in 0002 0004 0512 1024
+for padding in 0002 0256 0512 1024
 do
   basename="results/free-space-pad${padding}"
   ${inovesa_bin} -c wake-accuracy.cfg --padding ${padding} -o ${basename}.h5
